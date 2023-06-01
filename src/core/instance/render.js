@@ -1,7 +1,10 @@
+import { nextTick } from "../utils/index";
 import { createElement } from "../vdom/create-element";
 import { createTextVNode } from "../vdom/vnode";
 
 export function renderMixin(Vue){
+  Vue.prototype.$nextTick = nextTick
+
   Vue.prototype._render = function(){
     // 指向Vue 因为render函数使用with 当this传入vm的时候，_s(xxx)中的变量会自动去vm上拿取
     return this.$options.render.call(this);

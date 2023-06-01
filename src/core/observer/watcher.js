@@ -4,6 +4,7 @@
 // 3.让dep记住这个watcher即可，稍后属性变化了可以找到对应的dep中存放的watcher进行重新渲染
 
 import Dep from "./dep";
+import { queueWatcher } from "./scheduler";
 
 //1) 当我们创建渲染watcher的时候我们会把当前的渲染watcher放到Dep.target上
 //2) 当调用_render() 会进行取值操作 走到get上
@@ -37,8 +38,15 @@ class Watcher{
     Dep.target = null; 
   }
 
-  // 视图更新
+  // 视图更新 
   update(){
+    // 使用队列记录每次操作的watcher（相同的只记录一次），防止每次操作都执行更新
+    queueWatcher(this)
+  }
+
+  // 真正的视图更新操作
+  run(){
+    console.log('----------run------------');
     this.get()
   }
 }

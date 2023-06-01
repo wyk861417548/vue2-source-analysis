@@ -41,3 +41,12 @@
 一个属性对应着多个组件 1个dep对应着多个watcher 
 dep 和 watcher 多对多的关系
 ```
+
+#### nextTick
+```
+  - nextTick 不是维护了一个异步任务   而是将这个任务维护到了队列中
+
+  - 异步任务
+    - vue中的 nextTick没有直接采用某个api 而是采用优雅降级的方式
+    - 内部首先采用promise(ie 不兼容) MutationObserver(h5 的api)  ie专项 setImmediate
+```

@@ -32,15 +32,26 @@
 
     vm.$mount('#app')
 
-    setTimeout(()=>{
-      vm.name = {
-        baseBall:'棒球',
-        baskBall:"篮球"
-      }
-      vm.arr.push(10)
-      vm.arr[3].push(20)
-      console.log('vm',vm);
-    },1000)
+    vm.$nextTick(()=>{
+      // console.log('!',app.innerHTML);
+      vm.name = '666'
+      console.log('thiaxxx',vm.name);
+    })
+    vm.$nextTick(()=>{
+      // console.log('!2',app.innerHTML);
+      vm.name = '777'
+      console.log('thiaxxx',vm.name);
+    })
+
+    // setTimeout(()=>{
+    //   vm.name = {
+    //     baseBall:'棒球',
+    //     baskBall:"篮球"
+    //   }
+    //   vm.arr.push(10)
+    //   vm.arr[3].push(20)
+    //   console.log('vm',vm);
+    // },2000)
   </script>
 </body>
 </html>
