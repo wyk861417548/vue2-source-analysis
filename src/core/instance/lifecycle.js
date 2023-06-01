@@ -24,3 +24,12 @@ export function mountComponent(vm,el){
 
   let watcher = new Watcher(vm,updateComponents,true) //true 用于标识 是一个渲染watcher
 }
+
+
+// 生命周期钩子遍历执行
+export function callHook(vm,hook){
+  // 如果钩子函数的数组存在
+  const handlers = vm.$options[hook];
+  // console.log('handlers',handlers,vm,hook);
+  handlers && handlers.forEach(handle=>handle())
+}
