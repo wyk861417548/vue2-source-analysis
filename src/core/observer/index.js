@@ -2,6 +2,10 @@ import { newArrayProto } from "./array";
 import Dep from "./dep";
 class Observer{
   constructor(data){
+    //这里为了让每个对象(主要是为了数组)都有一个依赖收集(之前在Object.defineProperty中只是对属性进行了依赖收集)
+    //数组变化无法通知 所以特意加了一个依赖收集 通过对7个变异方法的劫持 然后去通知更新
+    this.dep = new Dep();
+
     //新增属性__ob__ 为了数组能够使用 observeArray 去观测新增的数据
     Object.defineProperty(data,'__ob__',{
       value:this,
@@ -33,11 +37,23 @@ class Observer{
   }
 }
 
+// 如果数组中还有数组或者对象 接着进行依赖收集
+function dependArray(value){
+  for (let i = 0; i < value.length; i++) {
+    let current = value[i];
+    console.log('current',current);
+    current.__ob__ && current.__ob__.dep.depend()
+    if(Array.isArray(current)){
+      dependArray(current)
+    }
+  }
+}
+
 function defineReactive(target,key,value){
   // 如果值是对象再次进行劫持
-  observe(value);
+  let childDep = observe(value);
 
-  let dep = new Dep();
+  let dep = new Dep();//这里只是给初始化data函数中的属性添加了dep（真正的依赖收集在下面）
   // console.log(key,dep.id);
 
   Object.defineProperty(target,key,{
@@ -45,8 +61,17 @@ function defineReactive(target,key,value){
       console.log('获取',key);
 
       // Dep.target存在代表执行了视图渲染方法_update
-      if(Dep.target){
-        dep.depend()
+      if(Dep.target){ //注意这里只是 对出现在模板{{}}中的属性 进行的依赖收集 dep.depend()
+        dep.depend() // 依赖收集
+        
+        // 如果是对象 进行依赖收集
+        if(childDep){
+          childDep.dep.depend();
+          // 如果值是数组
+          if(Array.isArray(value)){
+            dependArray(value)
+          }
+        }
       }
       
       return value;
