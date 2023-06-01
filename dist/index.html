@@ -7,6 +7,11 @@
   <title>vue2原理实现</title>
 </head>
 <body>
+  <!-- 注意  一定不要再里面注释html代码  会导致编译有问题 -->
+  <div id="app" class="999" style="color: rgb(51, 214, 255);font-size:18px">
+    <p style="color: rgb(51, 255, 85);">{{name}} 今年 {{age}} 岁了， 喜欢打篮球</p>
+  </div>
+
   <script src="./vue.js"></script>
   <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script> -->
   <script>
@@ -24,6 +29,8 @@
         }
       }
     })
+
+    vm.$mount('#app')
 
     setTimeout(()=>{
       vm.name = {
