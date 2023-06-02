@@ -5,11 +5,30 @@ function sameVnode (vnode1,vnode2) {
   return vnode1.tag === vnode2.tag && vnode1.key === vnode2.key;
 }
 
+// 判断是真实dom还是虚拟dom
+function createComponent(vnode){
+  let i = vnode.data;
+  if((i=i.hook) && (i=i.init)){
+    i(vnode)  //初始化组件 
+  }
+
+  // 说明是组件
+  if(vnode.componentInstance){
+    return true;
+  }
+}
+
 // 创建真实DOM元素
 export function createElm(vnode){
   let {tag,data,text,children} = vnode;
 
   if(typeof tag === 'string'){
+    // 如果是组件 走dom解析渲染流程
+    if(createComponent(vnode)){
+      // 这里的$el 是整个组件的真实节点
+      return vnode.componentInstance.$el;
+    }
+
     vnode.el = document.createElement(tag)
 
     patchProps(vnode.el,data)
@@ -53,6 +72,10 @@ function patchProps(el,oldprops = {},props={}){
 
 // 比对新老节点进行更新
 export function patch(oldVNode,vnode){
+  if(!oldVNode){ //这就是组件的挂载
+    return createElm(vnode)
+  }
+
   // 看是否是真实的元素节点
   let isRealElement = oldVNode.nodeType;
   if(isRealElement){
@@ -162,7 +185,7 @@ function updateChildren(el,oldCh,newCh){
   }
 
   const map = makeIndexByKey(oldCh)
-  debugger
+  // debugger
   while(oldStartIndex <= oldEndIndex && newStartIndex <= newEndIndex){
     if(!oldStartVnode){// 当乱序复用节点后 处理复用节点变为空的情况
       oldStartVnode = oldCh[++oldStartIndex]

@@ -1,5 +1,5 @@
-import { LIFECYCLE_HOOKS } from "../../shared/constants";
-import { hasOwn } from "../../shared/util";
+import { ASSET_TYPES, LIFECYCLE_HOOKS } from "../../shared/constants";
+import { extend, hasOwn } from "../../shared/util";
 
 
 const strats = {};
@@ -23,6 +23,21 @@ function mergeHook(p,c){
     return p
   } 
 }
+
+// components 建立父子关系
+function mergeAssets(parentVal={},childVal){
+  // debugger
+  const res = Object.create(parentVal || null)
+  if(childVal){
+    return extend(res,childVal)
+  }
+  return res;
+  
+}
+
+ASSET_TYPES.forEach(function (type) {
+  strats[type + 's'] = mergeAssets
+})
 
 
 export function mergeOptions(parent,child){

@@ -16,6 +16,10 @@
     
   </div>
 
+  <div id="extend" class="999" style="color: rgb(51, 214, 255);font-size:18px">
+    
+  </div>
+
   <script src="./vue.js"></script>
   <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script> -->
   <script>
@@ -37,6 +41,22 @@
     //   data:2,
     //   age:2
     // })
+
+    Vue.component('my-button',{
+      template:'<button>我是全局组件</button>'
+      // template:'<ul><li>A</li>  <li>B</li>  <li>C</li>  <li>D</li>  </ul>'
+    })
+
+    let Sub = Vue.extend({
+      template:'<button>我是extend组件 <my-button></my-button> </button>',
+      // components:{
+      //   'my-button':{
+      //     template:'<button>我是extend的子组件</button>'
+      //   }
+      // }
+    })
+
+    new Sub().$mount('#extend')
 
     let vm = new Vue({
       data(){

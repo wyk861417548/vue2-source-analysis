@@ -32,3 +32,15 @@ export function extend(to,_from){
 export function isObject (obj){
   return obj !== null && typeof obj === 'object'
 }
+
+export function makeMap(str,expectsLowerCase){
+  const list = str.split(',')
+  const map = Object.create(null)
+  for (let i = 0; i < list.length; i++) {
+    map[list[i]] = true
+  }
+  
+  return expectsLowerCase
+    ?val=>map[val.toLowerCase()]
+    : val => map[val]
+}
