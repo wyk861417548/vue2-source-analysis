@@ -8,31 +8,34 @@
 </head>
 <body>
   <!-- 注意  一定不要再里面注释html代码  会导致编译有问题 -->
+  <!-- <p style="color: rgb(51, 255, 85);">{{name}} 今年 {{age}} 岁了， 喜欢打篮球 {{arr}}</p> -->
   <div id="app" class="999" style="color: rgb(51, 214, 255);font-size:18px">
-    <p style="color: rgb(51, 255, 85);">{{name}} 今年 {{age}} 岁了， 喜欢打篮球 {{arr}}</p>
+    <p>{{fullname}}</p>
+    <p>{{fullname}}</p>
+    <p>{{fullname}}</p>
   </div>
 
   <script src="./vue.js"></script>
   <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script> -->
   <script>
-    Vue.mixin({
-      beforeCreate(){
-        console.log('beforeCreate ------ mixin1');
-      },
+    // Vue.mixin({
+    //   beforeCreate(){
+    //     console.log('beforeCreate ------ mixin1');
+    //   },
 
-      created(){
-        console.log('mixin1');
-      },
-      data:1,
-      name:2
-    })
-    Vue.mixin({
-      created(){
-        console.log('mixin2');
-      },
-      data:2,
-      age:2
-    })
+    //   created(){
+    //     console.log('mixin1');
+    //   },
+    //   data:1,
+    //   name:2
+    // })
+    // Vue.mixin({
+    //   created(){
+    //     console.log('mixin2');
+    //   },
+    //   data:2,
+    //   age:2
+    // })
 
     let vm = new Vue({
       data(){
@@ -50,20 +53,27 @@
       created(){
         console.log('我是生命周期钩子created');
       },
+
+      computed:{
+        fullname(){
+          console.log('-----------------computed----------------');
+          return this.name + this.lastName;
+        }
+      }
     })
 
     vm.$mount('#app')
 
-    vm.$nextTick(()=>{
-      // console.log('!',app.innerHTML);
-      vm.name = '666'
-      console.log('thiaxxx',vm.name);
-    })
-    vm.$nextTick(()=>{
-      // console.log('!2',app.innerHTML);
-      vm.name = '777'
-      console.log('thiaxxx',vm.name);
-    })
+    // vm.$nextTick(()=>{
+    //   // console.log('!',app.innerHTML);
+    //   vm.name = '666'
+    //   console.log('thiaxxx',vm.name);
+    // })
+    // vm.$nextTick(()=>{
+    //   // console.log('!2',app.innerHTML);
+    //   vm.name = '777'
+    //   console.log('thiaxxx',vm.name);
+    // })
 
     setTimeout(()=>{
       vm.name = {

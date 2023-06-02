@@ -34,6 +34,18 @@ class Dep{
 
 Dep.target = null;
 
+// 创建栈用于存储多个watcher
+const targetStack = []
+export function pushTarget(watcher){
+  Dep.target = watcher;
+  targetStack.push(watcher)
+}
+
+export function popTarget(){
+  targetStack.pop()
+  Dep.target = targetStack[targetStack.length - 1]
+}
+
 
 // （每个属性都有一个dep  watcher相当一个视图）
 // 一个组件中 有多个属性（n个属性形成一个视图） n个dep对应一个watcher

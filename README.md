@@ -64,3 +64,21 @@ dep 和 watcher 多对多的关系
 
   - 2.生命周期钩子则是合并成数组，然后通过callHook方法遍历执行
 ```
+
+##### computed实现 以及 初始化流程
+实现
+  - 1.初始化computed函数，遍历对象，给每个计算属性创建一个计算属性watcher
+  - 2.定义computed函数的get,set函数
+  - 3.创建计算属性控制器（createComputedGetter），并且让当前的计算属性的依赖属性去记录当前的渲染watcher，在watcher中创建计算函数，以及脏值判断逻辑
+  （只有当依赖属性改变后，通知渲染watcher重新渲染，才会重新调用watcher.evaluate更新数据）
+
+流程
+  - 1.页面首次渲染首先初始化数据，computed等等
+  - 2.在执行$mount后 首先创建并pushTarget记录渲染watcher（栈存储），在页面渲染 "{{计算属性}}" 的时候会触发计算属性的get方法，如果是脏值（默认脏值）
+  - 3.调用watcher.evaluate即调用get方法，通过pushTarget往栈中记录计算watcher，并执行计算属性函数
+  - 4.计算属性函数中的依赖属性（observer监听属性）会去记录当前watcher即计算watcher
+  - 5.依赖属性的dep记录完成后，执行计算函数得到计算结果，同时popTarget出栈当前计算属性（此时栈中就只有渲染watcher）
+  - 6.此时回到了计算属性的createComputedGetter中，然后再调用watcher.depend()让当前计算属性的依赖属性记住当前的渲染watcher
+  - 7.最后就是真实dom的创建以及渲染了
+
+  - 8.如果改变了依赖属性，那么dep.notify()遍历执行watcher，首先执行计算watcher重新设置为脏值，然后执行渲染watcher接着走1-7步骤
