@@ -4,6 +4,7 @@ import { initMinx } from "./init";
 import { lifecycleMixin } from "./lifecycle";
 import { stateMixin } from "./state";
 import { renderMixin } from "./render";
+import { diffTest } from "./diffTest";
 
 // 不使用class 去创建类 是为了避免所有的方法耦合在一起
 function Vue(options){
@@ -26,5 +27,8 @@ lifecycleMixin(Vue)
 
 // 扩展 _render
 renderMixin(Vue)
+
+// diff实现测试 为了方便观测节点变化
+diffTest(Vue)
 
 export default Vue;

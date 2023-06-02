@@ -91,3 +91,31 @@ dep 和 watcher 多对多的关系
   - 3.将watch遍历的 key 做为传入watcher中，并包裹成函数赋值给getter，该函数执行的结果作为watch的旧值新值
   - 4.最后监听的属性变化，通知更新，在watcher的run函数中执行回调
 ```
+##### diff（updateChildren核心）
+```
+  实现
+    diff算法核心就是4中命中优化
+      1.头大于尾 (从左往右比对 oldStartIndex：0 newStartIndex:0)
+        (a) old: a b c d    (b) old:a b c 
+            new: a b c          new:a b c d
+
+      2.尾小于头 (从右往左比对)
+        (a) old: a b c d   (b)  old:  b c d
+            new:   b c d        new:a b c d
+        
+      3、4.首位交叉 (老->新 新->老) 这里是两种
+        (a) old： a b c d  (b) old：a b c d
+            new： b c d a      new：d a b c
+
+      5.乱序比对
+        d c b a 
+        a b c d
+
+    - 4中命中，节点复用，
+    - 最后乱序比对 创建旧节点 字典库  用于判断是否存在相同节点 采取复用
+
+  流程
+    - 在之前的更新中每次更新都会产生新的虚拟节点，通过新的虚拟节点生成真是节点，生成后替换掉老的节点
+    - 在第一次渲染的时候我们会产生虚拟节点，第二次更新我们也会调用render方法产生虚拟节点，通过比对虚拟节点的差异，进行部分更新
+```
+
