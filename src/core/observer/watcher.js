@@ -11,17 +11,27 @@ import { queueWatcher } from "./scheduler";
 
 let id = 0;
 class Watcher{
-  constructor(vm,fn,options){
+  constructor(vm,expOrFn,options,cb){
     this.id = id++; //唯一标识
     this.vm = vm;  //当前视图实例
     this.renderWatcher  =options;  //true 标识是一个渲染watcher
-    this.getter = fn; //视图初始化以及更新函数
+
+    // expOrFn 视图初始化以及更新函数,computed计算函数，watch回调函数 其中一种
+    if(typeof expOrFn === "string"){
+      this.getter = function(){return vm[expOrFn]}
+    }else{
+      this.getter = expOrFn;
+    }
+
     this.deps = [];  // 视图所对应属性对应的dep集合
     this.depId = new Set(); // 视图对应的dep的id集合
     this.lazy = options.lazy;  //用于标识自己来源是computed方法
     this.dirty = this.lazy; //脏值判断（用于判断computed方法是否缓存，是直接把watcher的value返回，否则再次调用evaluate计算新值）
+    this.user = options.user; //标识是组件自己的watcher（即watch的watcher）
+    this.cb = cb; //watch的回调
     
-    this.lazy?undefined:this.get();
+    // this.value 存储第一次执行的值 作为watch的oldVal
+    this.value = this.lazy?undefined:this.get();
   }
 
   // 一个组件对应多个属性 每个组件上的重复属性只记录一次
@@ -47,7 +57,7 @@ class Watcher{
     // 1.当计算属性的 某个值（记住了计算watcher 和 渲染watcher）更改时 会执行dep.notify 对队列中的watcher执行update方法 
     // 2.首先调用计算watcher 设置dirty为真，使计算属性走evaluate方法 获得计算属性值
     // 3.再调用渲染watcher更新视图
-    console.log('渲染完毕',this);
+    console.log('-------------watcher---------------',this);
     if(this.lazy){
       this.dirty = true
     }else{
@@ -59,7 +69,11 @@ class Watcher{
   // 真正的视图更新操作
   run(){
     console.log('----------run------------');
-    this.get()
+    let oldVal = this.value;
+    let newVal = this.get();
+    if(this.user){
+      this.cb.call(this.vm,newVal,oldVal)
+    }
   }
 
   // 计算属性通过计算watcher获取对应的值

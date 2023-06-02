@@ -9,10 +9,11 @@
 <body>
   <!-- 注意  一定不要再里面注释html代码  会导致编译有问题 -->
   <!-- <p style="color: rgb(51, 255, 85);">{{name}} 今年 {{age}} 岁了， 喜欢打篮球 {{arr}}</p> -->
+  <!-- <p>{{fullname}}</p>
+  <p>{{fullname}}</p>
+  <p>{{fullname}}</p> -->
   <div id="app" class="999" style="color: rgb(51, 214, 255);font-size:18px">
-    <p>{{fullname}}</p>
-    <p>{{fullname}}</p>
-    <p>{{fullname}}</p>
+    
   </div>
 
   <script src="./vue.js"></script>
@@ -54,11 +55,30 @@
         console.log('我是生命周期钩子created');
       },
 
-      computed:{
-        fullname(){
-          console.log('-----------------computed----------------');
-          return this.name + this.lastName;
+      // computed:{
+      //   fullname(){
+      //     console.log('-----------------computed----------------');
+      //     return this.name + this.lastName;
+      //   }
+      // },
+
+      methods:{
+        handleAge(newVal,oldVal){
+          console.log('-----------------watch  handleAge----------------',newVal,oldVal);
         }
+      },
+
+
+      watch:{
+        name:{
+          handler(newVal,oldValue){
+            console.log('-----------------watch  name----------------');
+            console.log('newVal,oldValue',newVal,oldValue);
+          },
+          immediate:true
+        },
+        age:'handleAge'
+        
       }
     })
 

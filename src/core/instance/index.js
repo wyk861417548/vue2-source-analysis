@@ -2,6 +2,7 @@ import { initGlobalAPI } from "../global-api/index";
 import { patch } from "../vdom/patch";
 import { initMinx } from "./init";
 import { lifecycleMixin } from "./lifecycle";
+import { stateMixin } from "./state";
 import { renderMixin } from "./render";
 
 // 不使用class 去创建类 是为了避免所有的方法耦合在一起
@@ -13,6 +14,9 @@ Vue.prototype.__patch__ =  patch;
 
 // 扩展 init 方法
 initMinx(Vue)
+
+// 扩展 watch 等方法
+stateMixin(Vue)
 
 // 扩展全局api方法
 initGlobalAPI(Vue)

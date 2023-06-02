@@ -1,3 +1,4 @@
+import { isPlainObject } from "../../shared/util";
 import Dep from "../observer/dep";
 import { observe } from "../observer/index";
 import Watcher from "../observer/watcher";
@@ -16,14 +17,14 @@ function proxy(vm,target,key){
 
 export function initState(vm){
   const opts = vm.$options;
-  
-  if(opts.data){
-    initData(vm)
-  }
 
-  if(opts.computed){
-    initComputed(vm)
-  }
+  if(opts.methods) initMethods(vm, opts.methods)
+  
+  if(opts.data) initData(vm)
+    
+  if(opts.computed) initComputed(vm)
+
+  if(opts.watch) initWatch(vm)
 }
 
 // 数据初始化
@@ -93,4 +94,64 @@ function createComputedGetter(key){
 
     return watcher.value;
   }
+}
+
+// 方法初始化
+function initMethods(vm,methods){
+  for (const key in methods) {
+    vm[key] = methods[key].bind(vm)
+  }
+}
+
+// 初始化watch
+// 1.遍历watch对象，给每一个监听属性添加一个watch watcher
+// 2.判断值是对象还是函数，如果是对象单独处理handler
+// 3.将watch遍历的 key 做为传入watcher中，并包裹成函数赋值给getter，该函数执行的结果作为watch的旧值新值
+
+// watch写法
+// 1：watch:{name:'fn'}
+// 2：watch:{name:()=>{}}
+// 3：watch:{name:[()=>{},()=>{}]}
+// 4：watch:{name:{handler(){},immediate:true}}
+// 5:vm.$watch(()=>vm.name,()=>{})
+function initWatch(vm){
+  const watch = vm.$options.watch;
+  for (const key in watch) {
+    console.log('key---------',key);
+    const handler = watch[key]; //可以是字符串，函数，数组,对象
+    if(Array.isArray(handler)){
+      for (let i = 0; i < handler.length; i++) {
+        createWatcher(vm,key,handler[i])
+      }
+    }else{
+      createWatcher(vm,key,handler)
+    }
+  }
+}
+
+function createWatcher(vm,expOrFn,handler,options){
+  // 如果是一个对象 watch:{name:{handler(){},immediate:true}}
+  if(isPlainObject(handler)){
+    options = handler;
+    handler = handler.handler
+  }
+
+  if(typeof handler === 'string'){
+    handler = vm[handler]
+  }
+  return vm.$watch(expOrFn,handler,options)
+}
+
+export function stateMixin(Vue){
+  // 创建watch 即组件自己的的watcher
+  Vue.prototype.$watch = function (expOrFn,cb,options={}){
+    const vm = this
+    const watcher = new Watcher(vm,expOrFn,{user:true},cb)
+
+    // 如果是立即执行
+    if(options.immediate){
+      cb.call(vm,watcher.value)
+    }
+  }
+
 }
